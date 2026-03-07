@@ -4,7 +4,6 @@ import AuthLayout from "../components/AuthLayout";
 const ForgotPassword = () => {
 
   const onFinish = (values) => {
-    console.log(values);
 
     // password request API
     message.success("Reset OTP sent");

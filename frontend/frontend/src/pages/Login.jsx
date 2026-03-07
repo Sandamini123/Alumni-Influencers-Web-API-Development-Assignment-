@@ -1,16 +1,30 @@
 import { Form, Input, Button, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import { loginUser } from "../services/authService";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     console.log(values);
 
-    // TODO: call login API here
-    message.success("Login API ready");
+    try {
 
+      const res = await loginUser(values);
+
+      message.success("Login Successful");
+
+      // example: save token
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+      }
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      message.error(error.message);
+    }
   };
 
   return (
@@ -34,7 +48,7 @@ const Login = () => {
           <Input.Password placeholder="Enter password" />
         </Form.Item>
 
-        <Button type="primary" block htmlType="submit">
+        <Button type="primary" block htmlType="submit" >
           Login
         </Button>
 
