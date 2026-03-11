@@ -5,7 +5,7 @@ import { UserModel } from "../models/user.model.js";
 import { OtpModel } from "../models/otp.model.js";
 import { sendMail } from "../config/mailer.js";
 import { generateOtp6, sha256Hex } from "../utils/crypto.js";
-import { isStrongPassword, isUniversityEmail, isPasswordUnique } from "../utils/password.js"; // ✅ import added
+import { isStrongPassword, isUniversityEmail, isPasswordUnique } from "../utils/password.js";
 
 // ✅ correct schemas
 const registerSchema = z.object({
@@ -39,6 +39,7 @@ const resendSchema = z.object({
 export const AuthController = {
   registerSchema, otpSchema, loginSchema, resendSchema,
 
+  // REGISTER
   async register(req, res) {
     const { email, password } = req.body;
 
@@ -50,7 +51,6 @@ export const AuthController = {
       return res.status(400).json({ message: "Weak password. Use upper, lower, number, special, min 8." });
     }
 
-    // ✅ check uniqueness
     const unique = await isPasswordUnique(password);
     if (!unique) {
       return res.status(400).json({ message: "Password already used by another user. Choose a different one." });
@@ -67,6 +67,7 @@ export const AuthController = {
     res.status(201).json({ message: "Registered. OTP sent to email." });
   },
 
+  // VERIFY EMAIL
   async verifyEmail(req, res) {
     const { email, otp } = req.body;
     const user = await UserModel.findByEmail(email);
@@ -85,6 +86,7 @@ export const AuthController = {
     res.json({ message: "Email verified successfully" });
   },
 
+  // LOGIN
   async login(req, res) {
     const { email, password } = req.body;
     const user = await UserModel.findByEmail(email);
@@ -104,6 +106,15 @@ export const AuthController = {
     res.json({ token });
   },
 
+  // LOGOUT (NEW FUNCTION)
+  async logout(req, res) {
+    // JWT logout normally means client deletes token
+    res.json({
+      message: "Logout successful. Please delete the token on the client side."
+    });
+  },
+
+  // PASSWORD RESET REQUEST
   async requestPasswordReset(req, res) {
     const { email } = req.body;
     const user = await UserModel.findByEmail(email);
@@ -113,6 +124,7 @@ export const AuthController = {
     res.json({ message: "If account exists, OTP sent." });
   },
 
+  // RESET PASSWORD
   async resetPassword(req, res) {
     const { email, otp, newPassword } = req.body;
 
@@ -120,7 +132,6 @@ export const AuthController = {
       return res.status(400).json({ message: "Weak password. Use upper, lower, number, special, min 8." });
     }
 
-    // ✅ check uniqueness on reset
     const unique = await isPasswordUnique(newPassword);
     if (!unique) {
       return res.status(400).json({ message: "Password already used by another user. Choose a different one." });
@@ -143,6 +154,7 @@ export const AuthController = {
     res.json({ message: "Password reset successful" });
   },
 
+  // RESEND OTP
   async resendOtp(req, res) {
     const { email, purpose } = req.body;
     const user = await UserModel.findByEmail(email);
@@ -152,8 +164,10 @@ export const AuthController = {
     res.json({ message: "OTP resent." });
   },
 
+  // INTERNAL OTP SENDER
   async sendOtpInternal(email, userId, purpose) {
     console.log("OTP will be sent to:", email);
+
     const otp = generateOtp6();
     const otp_hash = sha256Hex(otp);
 

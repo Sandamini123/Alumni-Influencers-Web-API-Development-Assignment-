@@ -4,17 +4,48 @@ import {
   UserOutlined,
   DollarOutlined,
   SettingOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
 const DashboardLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  // ✅ Logout handler
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token"); // get stored JWT
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch("http://localhost:4000/api/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error("Logout failed", await response.json());
+      }
+
+      localStorage.removeItem("token"); // remove token from localStorage
+      navigate("/"); // redirect to login page
+    } catch (error) {
+      console.error("Logout error:", error);
+      navigate("/login");
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -22,7 +53,6 @@ const DashboardLayout = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        // style={{ backgroundColor: "#FF6B6B" }} // red sidebar
       >
         <div
           style={{
@@ -40,9 +70,30 @@ const DashboardLayout = () => {
           defaultSelectedKeys={["1"]}
           mode="inline"
           items={[
-            { key: "1", icon: <UserOutlined />, label: <Link to="/dashboard/profile">Profile</Link> },
-            { key: "2", icon: <DollarOutlined />, label: <Link to="/dashboard/bidding">Bidding</Link> },
-            { key: "3", icon: <SettingOutlined />, label: <Link to="/dashboard/admin">Admin</Link> },
+            {
+              key: "1",
+              icon: <UserOutlined />,
+              label: <Link to="/dashboard/profile">Profile</Link>,
+            },
+            {
+              key: "2",
+              icon: <DollarOutlined />,
+              label: <Link to="/dashboard/bidding">Bidding</Link>,
+            },
+            {
+              key: "3",
+              icon: <SettingOutlined />,
+              label: <Link to="/dashboard/admin">Admin</Link>,
+            },
+            {
+              key: "4",
+              icon: <LogoutOutlined />,
+              label: (
+                <span onClick={handleLogout} style={{ cursor: "pointer" }}>
+                  Logout
+                </span>
+              ),
+            },
           ]}
         />
       </Sider>

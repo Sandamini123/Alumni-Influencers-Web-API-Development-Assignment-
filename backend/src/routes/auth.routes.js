@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.js";
 import { authLimiter } from "../middlewares/rateLimiters.js";
+import { requireAuth } from "../middlewares/authJwt.js";
 import { z } from "zod";
 
 const router = Router();
@@ -20,5 +21,6 @@ router.post("/password/reset", authLimiter(), validate(z.object({
 })), (req,res)=>AuthController.resetPassword(req,res));
 
 router.post("/otp/resend", authLimiter(), validate(AuthController.resendSchema), (req,res)=>AuthController.resendOtp(req,res));
+router.post("/logout", requireAuth, (req,res)=>AuthController.logout(req,res));
 
 export default router;
