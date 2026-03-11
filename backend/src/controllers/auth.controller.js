@@ -153,6 +153,7 @@ export const AuthController = {
   },
 
   async sendOtpInternal(email, userId, purpose) {
+    console.log("OTP will be sent to:", email);
     const otp = generateOtp6();
     const otp_hash = sha256Hex(otp);
 

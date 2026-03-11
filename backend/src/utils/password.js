@@ -29,6 +29,13 @@ export function isStrongPassword(pw) {
  */
 export function isUniversityEmail(email) {
   if (typeof email !== "string") return false;
-  const domain = (process.env.UNIVERSITY_EMAIL_DOMAIN || "eastminster.ac.uk").toLowerCase();
-  return email.toLowerCase().endsWith("@" + domain);
+
+  const allowedDomains = [
+    "eastminster.ac.uk",
+    "gmail.com",
+  ];
+
+  const domain = email.split("@")[1].toLowerCase();
+
+  return allowedDomains.includes(domain);
 }
