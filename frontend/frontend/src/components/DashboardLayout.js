@@ -87,6 +87,11 @@ const DashboardLayout = () => {
             },
             {
               key: "4",
+              icon: <SettingOutlined />,
+              label: <Link to="/dashboard/todaysWinner">Todays Winner</Link>,
+            },
+            {
+              key: "5",
               icon: <LogoutOutlined />,
               label: (
                 <span onClick={handleLogout} style={{ cursor: "pointer" }}>

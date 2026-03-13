@@ -34,7 +34,7 @@ const Login = () => {
       }
 
       // Redirect to dashboard
-      navigate("/dashboard");
+      navigate("/dashboard/todaysWinner");
     } catch (error) {
       console.error("Login error:", error);
       message.error("Login failed. Please try again.");

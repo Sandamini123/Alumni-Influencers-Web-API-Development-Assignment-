@@ -46,10 +46,30 @@ export const BiddingController = {
   },
 
   async markEventAttended(req, res) {
-    // Simple endpoint (admin could control this normally)
+  try {
     const user_id = req.user.id;
     const monthKey = new Date().toISOString().slice(0, 7);
+
+    // ✅ Check if user already attended this month
+    const already = await EventAttendanceModel.hasAttended(user_id, monthKey);
+
+    if (already) {
+      return res.status(400).json({
+        message: "You have already marked attendance for this month",
+      });
+    }
+
+    // ✅ Mark attendance
     await EventAttendanceModel.setAttended(user_id, monthKey, true);
-    res.json({ message: "Event attendance marked for this month", monthKey });
-  },
+
+    res.json({
+      message: "Event attendance marked for this month",
+      monthKey,
+    });
+
+  } catch (err) {
+    console.error("Error marking attendance:", err);
+    res.status(500).json({ message: "Failed to mark event attendance" });
+  }
+}
 };
