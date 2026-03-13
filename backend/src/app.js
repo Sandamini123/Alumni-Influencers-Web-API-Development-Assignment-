@@ -15,6 +15,7 @@ import { startNightlyWinnerJob } from "./jobs/nightlyWinner.job.js";
 import { startOtpCleanupJob } from "./jobs/otpCleanup.job.js";
 import { UserModel } from "./models/user.model.js";
 import bcrypt from "bcrypt";
+import alumniRoutes from "./routes/alumni.routes.js";
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/bidding", biddingRoutes);
 app.use("/api/admin/api-keys", apiKeyRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/alumni", alumniRoutes);
 
 // ✅ error handler last
 app.use(errorHandler);

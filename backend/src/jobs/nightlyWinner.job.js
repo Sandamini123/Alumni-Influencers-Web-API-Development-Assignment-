@@ -6,7 +6,7 @@ import { EventAttendanceModel } from "../models/eventAttendance.model.js";
 
 export function startNightlyWinnerJob() {
   // Midnight server time
-  cron.schedule("0 0 * * *", async () => {
+  cron.schedule("* * * * *", async () => {
     try {
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
       const winnerBid = await BidModel.getHighestBid(yesterday);

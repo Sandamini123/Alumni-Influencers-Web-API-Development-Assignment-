@@ -9,6 +9,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import Profile from "./pages/Profile";
 import Bidding from "./pages/Bidding";
 import Admin from "./pages/Admin";
+import NightWinnerAlumni from "./pages/NightWinnerAlumni";
 
 function App() {
   return (
@@ -20,10 +21,11 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="profile" element={<Profile />} />
           <Route path="bidding" element={<Bidding />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="NightWinnerAlumni" element={<NightWinnerAlumni />} />
         </Route>
       </Routes>
     </BrowserRouter>

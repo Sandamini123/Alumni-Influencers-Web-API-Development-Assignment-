@@ -1,6 +1,22 @@
-import { Form, Input, Button, message } from "antd";
+import React from "react";
+import {
+  Form,
+  Input,
+  Button,
+  message,
+  Card,
+  Typography,
+  Space,
+} from "antd";
+import {
+  MailOutlined,
+  LockOutlined,
+  LoginOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
+
+const { Title, Text, Paragraph } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,7 +27,6 @@ const Login = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Authorization header is not needed on login, token comes after login
         },
         body: JSON.stringify({
           email: values.email,
@@ -26,15 +41,12 @@ const Login = () => {
         return;
       }
 
-      message.success("Login Successful");
-
-      // Save token to localStorage
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
-      // Redirect to dashboard
-      navigate("/dashboard/todaysWinner");
+      message.success("Login successful");
+      navigate("/dashboard/profile");
     } catch (error) {
       console.error("Login error:", error);
       message.error("Login failed. Please try again.");
@@ -42,40 +54,126 @@ const Login = () => {
   };
 
   return (
-    <AuthLayout title="Login">
-      <Form layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: "Please enter your email" },
-            { type: "email", message: "Please enter a valid email" },
-          ]}
-        >
-          <Input placeholder="Enter email" />
-        </Form.Item>
+    <div
+      style={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        background:
+          "linear-gradient(135deg, #f0f5ff 0%, #ffffff 50%, #e6f4ff 100%)",
+      }}
+    >
+      <Card
+        style={{
+          width: "100%",
+          height: "auto",
+          maxWidth: 460,
+          borderRadius: 20,
+          boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
+          border: "1px solid #f0f0f0",
+        }}
+        styles={{
+          body: {
+            padding: "36px 32px",
+          },
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: "Please enter your password" }]}
-        >
-          <Input.Password placeholder="Enter password" />
-        </Form.Item>
-
-        <Button type="primary" block htmlType="submit">
-          Login
-        </Button>
-
-        <div style={{ marginTop: 10 }}>
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Space direction="vertical" size={4}>
+            <Title level={2} style={{ margin: 0 }}>
+              Welcome Back
+            </Title>
+            <Text type="secondary">
+              Sign in to the Alumni Influencer Platform
+            </Text>
+          </Space>
         </div>
 
-        <div style={{ marginTop: 10 }}>
-          Don't have an account? <Link to="/register">Register</Link>
+        <div
+          style={{
+            marginBottom: 24,
+            padding: 16,
+            borderRadius: 12,
+            background: "#fafafa",
+            border: "1px solid #f0f0f0",
+          }}
+        >
+          <Paragraph style={{ margin: 0, textAlign: "center", color: "#595959" }}>
+            Access your alumni profile, manage bidding activity, and view platform
+            updates securely.
+          </Paragraph>
         </div>
-      </Form>
-    </AuthLayout>
+
+        <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
+          <Form.Item
+            label="Email Address"
+            name="email"
+            rules={[
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+          >
+            <Input
+              size="large"
+              prefix={<MailOutlined style={{ color: "#8c8c8c" }} />}
+              placeholder="Enter your email"
+              style={{ borderRadius: 10, height: 46 }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: "Please enter your password" }]}
+          >
+            <Input.Password
+              size="large"
+              prefix={<LockOutlined style={{ color: "#8c8c8c" }} />}
+              placeholder="Enter your password"
+              style={{ borderRadius: 10, height: 46 }}
+            />
+          </Form.Item>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 20,
+            }}
+          >
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </div>
+
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            icon={<LoginOutlined />}
+            style={{
+              height: 46,
+              borderRadius: 10,
+              fontWeight: 600,
+            }}
+          >
+            Login
+          </Button>
+
+          <div
+            style={{
+              marginTop: 20,
+              textAlign: "center",
+              color: "#595959",
+            }}
+          >
+            Don&apos;t have an account? <Link to="/register">Register</Link>
+          </div>
+        </Form>
+      </Card>
+    </div>
   );
 };
 
