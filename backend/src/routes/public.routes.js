@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { PublicController } from "../controllers/public.controller.js";
-import { requireApiKey } from "../middlewares/apiKeyAuth.js";
+import { AlumniController } from "../controllers/alumni.controller.js";
 
 const router = Router();
 
-router.get("/featured/today", requireApiKey("PUBLIC_READ"), (req,res)=>PublicController.todayFeatured(req,res));
+// Public Featured Alumni route
+router.get("/featured/today", AlumniController.getTodayFeatured);
 
 export default router;

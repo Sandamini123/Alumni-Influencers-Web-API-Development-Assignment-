@@ -22,36 +22,51 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    try {
-      const response = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-      });
+  try {
+    const response = await fetch("http://localhost:4000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        message.error(data.message || "Login failed");
-        return;
-      }
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      message.success("Login successful");
-      navigate("/dashboard/profile");
-    } catch (error) {
-      console.error("Login error:", error);
-      message.error("Login failed. Please try again.");
+    if (!response.ok) {
+      message.error(data.message || "Login failed");
+      return;
     }
-  };
+
+    // Save token
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
+    // Save role
+    if (data.user?.role) {
+      localStorage.setItem("role", data.user.role);
+    }
+
+    message.success("Login successful");
+
+    // ⭐ Role-based navigation
+    if (data.user?.role === "ADMIN") {
+      navigate("/adminDashboard/admin");
+    } else if (data.user?.role === "ALUMNI") {
+      navigate("/dashboard/profile");
+    } else {
+      message.error("Unknown user role");
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    message.error("Login failed. Please try again.");
+  }
+};
 
   return (
     <div

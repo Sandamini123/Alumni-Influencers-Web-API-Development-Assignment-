@@ -19,7 +19,9 @@ import {
   CalendarOutlined,
   DollarOutlined,
   UserOutlined,
+  LoginOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
@@ -28,6 +30,7 @@ const NightWinnerAlumni = () => {
   const [loading, setLoading] = useState(true);
   const [featured, setFeatured] = useState(null);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
 
@@ -82,16 +85,41 @@ const NightWinnerAlumni = () => {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+    <div style={{ maxWidth: 1000, margin: "40px auto", padding: "0 16px" }}>
+      {/* Top Navigation */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: 24,
+        }}
+      >
+        <Button
+          type="primary"
+          icon={<LoginOutlined />}
+          onClick={() => navigate("/login")}
+          style={{
+            borderRadius: 12,
+            fontWeight: 600,
+            background: "linear-gradient(135deg, #69b1ff 0%, #4a90e2 100%)",
+            border: "none",
+          }}
+        >
+          Login
+        </Button>
+      </div>
+
+      {/* Featured Card */}
       <Card
         style={{
           borderRadius: 24,
           overflow: "hidden",
           boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
-          border: "1px solid #f0f0f0",
+          border: "none",
         }}
         bodyStyle={{ padding: 0 }}
       >
+        {/* Header Gradient */}
         <div
           style={{
             background: "linear-gradient(135deg, #a9c7f1 0%, #69b1ff 100%)",
@@ -109,7 +137,7 @@ const NightWinnerAlumni = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 30,
+                fontSize: 32,
                 boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
               }}
             >
@@ -127,11 +155,13 @@ const NightWinnerAlumni = () => {
           </Space>
         </div>
 
+        {/* Body */}
         <div style={{ padding: "32px" }}>
           <Row gutter={[32, 32]} align="middle">
+            {/* Avatar + Badge */}
             <Col xs={24} md={8} style={{ textAlign: "center" }}>
               <Avatar
-                size={140}
+                size={160}
                 src={featured?.avatar_url}
                 icon={<UserOutlined />}
                 style={{
@@ -140,16 +170,15 @@ const NightWinnerAlumni = () => {
                   backgroundColor: "#1677ff",
                 }}
               />
-
               <div style={{ marginTop: 18 }}>
                 <Tag
                   color="gold"
                   icon={<TrophyOutlined />}
                   style={{
-                    padding: "6px 14px",
-                    borderRadius: 20,
-                    fontSize: 14,
-                    fontWeight: 600,
+                    padding: "8px 18px",
+                    borderRadius: 24,
+                    fontSize: 16,
+                    fontWeight: 700,
                   }}
                 >
                   Winner
@@ -157,6 +186,7 @@ const NightWinnerAlumni = () => {
               </div>
             </Col>
 
+            {/* Details */}
             <Col xs={24} md={16}>
               <Title level={2} style={{ marginBottom: 8 }}>
                 {featured?.full_name}
@@ -168,6 +198,7 @@ const NightWinnerAlumni = () => {
 
               <Divider />
 
+              {/* Stats */}
               <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12}>
                   <Card
@@ -214,6 +245,7 @@ const NightWinnerAlumni = () => {
                 </Col>
               </Row>
 
+              {/* LinkedIn Button */}
               <div style={{ marginTop: 24 }}>
                 {featured?.linkedin_url ? (
                   <Button
@@ -223,8 +255,10 @@ const NightWinnerAlumni = () => {
                     href={featured.linkedin_url}
                     target="_blank"
                     style={{
-                      borderRadius: 10,
+                      borderRadius: 12,
                       fontWeight: 600,
+                      background: "linear-gradient(135deg, #69b1ff 0%, #4a90e2 100%)",
+                      border: "none",
                     }}
                   >
                     View LinkedIn Profile

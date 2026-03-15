@@ -14,7 +14,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
-const DashboardLayout = () => {
+const AdminDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,20 +54,16 @@ const DashboardLayout = () => {
 
   const menuItems = [
     {
-      key: "/dashboard/profile",
+      key: "/adminDashboard/admin",
       icon: <UserOutlined />,
-      label: <Link to="/dashboard/profile">Profile</Link>,
-    },
-    {
-      key: "/dashboard/bidding",
-      icon: <DollarOutlined />,
-      label: <Link to="/dashboard/bidding">Bidding</Link>,
+      label: <Link to="/adminDashboard/admin">Admin</Link>,
     },
     // {
-    //   key: "/dashboard/NightWinnerAlumni",
-    //   icon: <CrownOutlined />,
-    //   label: <Link to="/dashboard/NightWinnerAlumni">Today&apos;s Winner</Link>,
-    // },
+    //   key: "/adminDashboard/featuredDashboard",
+    //   icon: <DollarOutlined />,
+    //   label: <Link to="/adminDashboard/featuredDashboard">Features</Link>,
+    // }
+    
   ];
 
   return (
@@ -195,4 +191,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default AdminDashboard;

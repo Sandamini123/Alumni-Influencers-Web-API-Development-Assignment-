@@ -28,7 +28,7 @@ const { Title, Text, Paragraph } = Typography;
 
 const ADMIN_API = "http://localhost:4000/api/admin/api-keys";
 
-const ProfileAdmin = () => {
+const Admin = () => {
   const [apiKeys, setApiKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -401,4 +401,4 @@ const ProfileAdmin = () => {
   );
 };
 
-export default ProfileAdmin;
+export default Admin;

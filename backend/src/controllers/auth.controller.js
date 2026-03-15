@@ -88,23 +88,33 @@ export const AuthController = {
 
   // LOGIN
   async login(req, res) {
-    const { email, password } = req.body;
-    const user = await UserModel.findByEmail(email);
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+  const { email, password } = req.body;
 
-    const ok = await bcrypt.compare(password, user.password_hash);
-    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+  const user = await UserModel.findByEmail(email);
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    if (!user.is_verified) return res.status(403).json({ message: "Email not verified" });
+  const ok = await bcrypt.compare(password, user.password_hash);
+  if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
-    );
+  if (!user.is_verified)
+    return res.status(403).json({ message: "Email not verified" });
 
-    res.json({ token });
-  },
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
+  );
+
+  // ✅ UPDATED RESPONSE
+  res.json({
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
+  });
+},
 
   // LOGOUT (NEW FUNCTION)
   async logout(req, res) {

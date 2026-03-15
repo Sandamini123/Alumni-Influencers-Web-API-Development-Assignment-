@@ -1,63 +1,60 @@
 import cron from "node-cron";
 import { BidModel } from "../models/bid.model.js";
 import { FeaturedModel } from "../models/featured.model.js";
-import { pool } from "../config/db.js";
-import { EventAttendanceModel } from "../models/eventAttendance.model.js";
+import { sendWinnerEmail } from "../utils/email.js";
+
+/**
+ * Helper to get local date string in YYYY-MM-DD format
+ * daysOffset = 0 for today, -1 for yesterday, etc.
+ */
+function getLocalDate(daysOffset = 0) {
+  const now = new Date();
+  now.setDate(now.getDate() + daysOffset);
+  return now.toLocaleDateString("en-CA"); // YYYY-MM-DD
+}
 
 export function startNightlyWinnerJob() {
-  // Midnight server time
-  cron.schedule("* * * * *", async () => {
+  // Runs every day at 00:00 local server time
+  cron.schedule("0 0 * * *", async () => {
+    console.log("Running Nightly Winner Job:", new Date());
+
     try {
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      // Yesterday and today in local time
+      const yesterday = getLocalDate(-1);
+      const today = getLocalDate(0);
+
+      console.log("Checking bids for:", yesterday);
+
+      // Get highest bid for yesterday
       const winnerBid = await BidModel.getHighestBid(yesterday);
-      if (!winnerBid) return;
 
-      // Monthly limit enforcement
-      const monthKey = yesterday.slice(0, 7);
-      const user_id = winnerBid.user_id;
-
-      const [rows] = await pool.query(
-        `SELECT COUNT(*) AS wins
-         FROM featured_alumni
-         WHERE user_id=:user_id AND DATE_FORMAT(featured_date,'%Y-%m')=:monthKey`,
-        { user_id, monthKey }
-      );
-
-      const wins = rows[0].wins || 0;
-      const attended = await EventAttendanceModel.hasAttended(user_id, monthKey);
-      const maxWins = attended ? 4 : 3;
-
-      if (wins >= maxWins) {
-        // If over limit, pick next eligible bid
-        const [eligible] = await pool.query(
-          `SELECT b.*
-           FROM bids b
-           WHERE b.bid_date=:yesterday
-           ORDER BY b.amount DESC, b.updated_at ASC`,
-          { yesterday }
-        );
-
-        let picked = null;
-        for (const b of eligible) {
-          const [r2] = await pool.query(
-            `SELECT COUNT(*) AS wins
-             FROM featured_alumni
-             WHERE user_id=:uid AND DATE_FORMAT(featured_date,'%Y-%m')=:monthKey`,
-            { uid: b.user_id, monthKey }
-          );
-          const w = r2[0].wins || 0;
-          const att = await EventAttendanceModel.hasAttended(b.user_id, monthKey);
-          const mx = att ? 4 : 3;
-          if (w < mx) { picked = b; break; }
-        }
-        if (!picked) return; // nobody eligible
-        await FeaturedModel.setWinner(yesterday, picked.user_id, picked.amount);
+      if (!winnerBid) {
+        console.log("No bids found for yesterday:", yesterday);
         return;
       }
 
-      await FeaturedModel.setWinner(yesterday, winnerBid.user_id, winnerBid.amount);
-    } catch (e) {
-      console.error("Nightly winner job failed:", e.message);
+      // Set winner for today
+      await FeaturedModel.setWinner(
+        today,
+        winnerBid.user_id,
+        winnerBid.amount
+      );
+
+      console.log("Winner selected:", winnerBid.user_id, "Amount:", winnerBid.amount);
+
+      // Get user info to send email
+      const user = await FeaturedModel.getUserInfo(winnerBid.user_id);
+
+      if (user?.email) {
+        await sendWinnerEmail(user.email, user.full_name);
+        console.log("Winner email sent:", user.email);
+      }
+
+    } catch (error) {
+      console.error("Nightly winner job failed:", error);
     }
+  }, {
+    scheduled: true,
+    timezone: "Asia/Colombo" // Set your local timezone here
   });
 }
